@@ -91,12 +91,25 @@ create table if not exists public.contact_submissions (
   read_at timestamptz
 );
 
+create table if not exists public.giveaway_entries (
+  id uuid primary key default gen_random_uuid(),
+  name text not null check (char_length(name) between 2 and 80),
+  email text not null check (char_length(email) between 5 and 254 and email ~ '^[^[:space:]@]+@[^[:space:]@]+[.][^[:space:]@]+$'),
+  phone text not null check (phone ~ '^[+]?[0-9 ()-]{7,24}$' and char_length(regexp_replace(phone, '[^0-9]', '', 'g')) between 7 and 15),
+  country_code text not null check (left(country_code, 1) = '+' and char_length(country_code) between 2 and 4 and substr(country_code, 2) ~ '^[0-9]+$'),
+  country_iso text not null check (country_iso ~ '^[A-Z]{2}$'),
+  instagram_handle text not null check (instagram_handle ~ '^[A-Za-z0-9._]{1,30}$'),
+  consent_given boolean not null check (consent_given),
+  created_at timestamptz not null default now()
+);
+
 alter table public.courses enable row level security;
 alter table public.market_posts enable row level security;
 alter table public.evidence enable row level security;
 alter table public.partners enable row level security;
 alter table public.site_settings enable row level security;
 alter table public.contact_submissions enable row level security;
+alter table public.giveaway_entries enable row level security;
 
 drop policy if exists "Public reads published courses" on public.courses;
 create policy "Public reads published courses" on public.courses for select using (status = 'published');
@@ -127,6 +140,30 @@ drop policy if exists "Admins read contact submissions" on public.contact_submis
 create policy "Admins read contact submissions" on public.contact_submissions for select using (public.is_knightfx_admin());
 drop policy if exists "Admins update contact submissions" on public.contact_submissions;
 create policy "Admins update contact submissions" on public.contact_submissions for update using (public.is_knightfx_admin()) with check (public.is_knightfx_admin());
+
+-- Visitors can submit an entry but cannot read, update or delete any entry.
+-- Administrators can read entries through the protected content workspace.
+revoke all on public.giveaway_entries from anon, authenticated;
+grant insert on public.giveaway_entries to anon, authenticated;
+grant select on public.giveaway_entries to authenticated;
+revoke update, delete on public.giveaway_entries from anon, authenticated;
+drop policy if exists "Public submits giveaway entries" on public.giveaway_entries;
+create policy "Public submits giveaway entries" on public.giveaway_entries for insert to anon, authenticated
+  with check (
+    consent_given
+    and char_length(name) between 2 and 80
+    and char_length(email) between 5 and 254
+    and email ~ '^[^[:space:]@]+@[^[:space:]@]+[.][^[:space:]@]+$'
+    and left(country_code, 1) = '+'
+    and char_length(country_code) between 2 and 4
+    and substr(country_code, 2) ~ '^[0-9]+$'
+    and phone ~ '^[+][0-9]{7,15}$'
+    and left(phone, char_length(country_code)) = country_code
+    and country_iso ~ '^[A-Z]{2}$'
+    and instagram_handle ~ '^[A-Za-z0-9._]{1,30}$'
+  );
+drop policy if exists "Admins read giveaway entries" on public.giveaway_entries;
+create policy "Admins read giveaway entries" on public.giveaway_entries for select to authenticated using (public.is_knightfx_admin());
 
 insert into storage.buckets (id, name, public)
 values ('site-assets', 'site-assets', true)

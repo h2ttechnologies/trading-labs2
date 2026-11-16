@@ -18,6 +18,7 @@ const firmLinks = [
   { name: "FundedSquad", category: "prop_firm", href: "https://checkout.fundedsquad.com/checkout/?add-to-cart=30900&variation_id=32619&coupon=KNIGHTFX&quantity=1&attribute_account-size=100K&attribute_trading-platform=MetaTrader+5&_gl=1*myzbgc*_gcl_aw*R0NMLjE3OTExNDIzMDkuQ2owS0NRanc4b2ZXQmhDSEFSSXNBTkJqNEx1ZmxPcGdQcWJfMlllREZsTjFjRWJnYnpmX2xXWS16Nm82TXo2WjZfX2RDcXkwRjF1NlVoVWFBcDBxRUFMd193Y0I.*_gcl_au*NTI5OTkyMjQ4LjE3OTExNDIyODQuNTYwMzcwNDU2LjE3OTQ0NTY2MjUuMTc5NDQ1NjYyNi4xODAxMDgxMzguMTc5NDQ1NjYyNS4xNzk0NDU2NjI2*FPAU*NTI5OTkyMjQ4LjE3OTExNDIyODQ." },
   { name: "Legion Funding", category: "prop_firm", href: "https://legionfunding.com/" },
   { name: "Blue Guardian", category: "prop_firm", href: "https://checkout.blueguardian.com/" },
+  { name: "Funded Trader Markets", category: "prop_firm", href: "https://fundedtradermarkets.com/ref/knightfxtrader" },
   { name: "XM Global", category: "broker", href: "https://affs.click/DneRX" },
   { name: "Valetax", category: "broker", href: "https://ma.valetax.com/p/6882272" },
 ] as const;
@@ -29,6 +30,7 @@ const partnerLogos: Record<string, string> = {
   fundedsquad: "/partners/fundedsquad.jpg",
   legionfunding: "/partners/legion-funding.jpg",
   blueguardian: "/partners/blueguardian.jpg",
+  fundedtradermarkets: "/partners/funded-trader-markets.jpeg",
   xmglobal: "/partners/xm-global.jpg",
   valetax: "/partners/valetax.jpg",
 };
@@ -124,13 +126,13 @@ export function PartnersDirectory({ items }: { items: NonNullable<PublicSiteCont
           </div>
           <div className="partner-heading-aside">
             <p>Explore prop firms and brokers connected with KnightFX. Review each provider’s latest terms directly before you decide.</p>
-            <div className="partner-network-index"><strong>08</strong><span><i />NETWORK LINKS</span></div>
+            <div className="partner-network-index"><strong>09</strong><span><i />NETWORK LINKS</span></div>
           </div>
         </div>
         <div className="partner-directory-toolbar">
           <div className="partner-filter-tabs" role="group" aria-label="Filter providers">
             <button type="button" aria-pressed={isFirmView} className={isFirmView ? "is-active" : ""} onClick={() => setCategory("prop_firm")}>
-              <span>Prop firms</span><small>06</small>
+              <span>Prop firms</span><small>07</small>
             </button>
             <button type="button" aria-pressed={!isFirmView} className={!isFirmView ? "is-active" : ""} onClick={() => setCategory("broker")}>
               <span>Brokers</span><small>02</small>

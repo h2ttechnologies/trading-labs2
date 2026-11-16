@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { FloatingTelegram } from "@/components/floating-telegram";
+import { GiveawayEntryPopup } from "@/components/giveaway-entry-popup";
 import { SmoothScroll } from "@/components/reveal";
 import { getPublicSiteContent } from "@/lib/public-content";
 import { siteUrl } from "@/lib/site-url";
@@ -51,6 +52,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         {children}
         <SiteFooter links={publicContent?.links} />
         <FloatingTelegram />
+        <GiveawayEntryPopup />
       </body>
     </html>
   );

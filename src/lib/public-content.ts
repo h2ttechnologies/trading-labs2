@@ -1,7 +1,8 @@
-import { cache } from "react";
+import { cacheLife } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
 import type { Course, Insight } from "@/lib/content";
 import type { ResultItem } from "@/components/results-gallery";
+import { getSupabasePublicConfig } from "@/lib/supabase-config";
 
 export type Partner = {
   id?: string;
@@ -24,17 +25,17 @@ export type PublicSiteContent = {
   mentor: Record<string, string>;
 };
 
-const emptyContent: PublicSiteContent = { courses: [], insights: [], results: [], partners: [], links: {}, mentor: {} };
+export async function getPublicSiteContent(): Promise<PublicSiteContent | null> {
+  "use cache";
+  cacheLife("minutes");
 
-export const getPublicSiteContent = cache(async (): Promise<PublicSiteContent | null> => {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) return null;
+  const config = getSupabasePublicConfig();
+  if (!config) return null;
 
   let supabase;
   try {
-    new URL(url);
-    supabase = createClient(url, anonKey, { auth: { persistSession: false, autoRefreshToken: false } });
+    new URL(config.url);
+    supabase = createClient(config.url, config.key, { auth: { persistSession: false, autoRefreshToken: false } });
   } catch {
     return null;
   }
@@ -50,7 +51,7 @@ export const getPublicSiteContent = cache(async (): Promise<PublicSiteContent | 
 
   // Public display falls back to the editable local content if a content query
   // is temporarily unavailable; unpublished evidence remains hidden by RLS.
-  const data = emptyContent;
+  const data: PublicSiteContent = { courses: [], insights: [], results: [], partners: [], links: {}, mentor: {} };
   if (!coursesResult.error && coursesResult.data) data.courses = coursesResult.data as unknown as Course[];
   if (!postsResult.error && postsResult.data) {
     data.insights = postsResult.data.map((row) => ({
@@ -88,7 +89,7 @@ export const getPublicSiteContent = cache(async (): Promise<PublicSiteContent | 
     }
   }
   return data;
-});
+}
 
 export async function getPublicInsight(slug: string) {
   const content = await getPublicSiteContent();

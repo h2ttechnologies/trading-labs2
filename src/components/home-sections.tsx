@@ -176,7 +176,6 @@ export function MentorshipOffer() {
         <div className="mentorship-offer">
           <div className="mentorship-price-panel">
             <div className="mentorship-price-topline">
-              <span className="mentorship-plan-label">15-DAY LIVE MENTORSHIP</span>
               <span className="mentorship-offer-tag">SAVE $200</span>
             </div>
             <div className="mentorship-price-block">

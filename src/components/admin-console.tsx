@@ -4,8 +4,9 @@ import { createBrowserClient } from "@supabase/ssr";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { Check, ChevronRight, CloudUpload, FileJson2, Inbox, LogOut, RefreshCw, Save, Shield, Trash2, X } from "lucide-react";
+import { getSupabasePublicConfig } from "@/lib/supabase-config";
 
-type TableKey = "courses" | "market_posts" | "evidence" | "partners" | "site_settings" | "contact_submissions";
+type TableKey = "courses" | "market_posts" | "evidence" | "partners" | "site_settings" | "contact_submissions" | "giveaway_entries";
 type Row = Record<string, unknown>;
 
 const collections: { id: TableKey; label: string; summary: string; starter: Row }[] = [
@@ -15,6 +16,7 @@ const collections: { id: TableKey; label: string; summary: string; starter: Row 
   { id: "partners", label: "Partners", summary: "Verified partner records, codes and links.", starter: { name: "Partner name", category: "prop_firm", description: "", logo_url: null, affiliate_code: null, discount: null, affiliate_url: null, status: "draft", featured: false } },
   { id: "site_settings", label: "Site settings", summary: "Public brand details and community destinations.", starter: { key: "social_links", value: { discord: "", telegram: "", instagram: "", youtube: "", whatsapp: "", email: "" }, public: true } },
   { id: "contact_submissions", label: "Contact inbox", summary: "Read enquiries delivered to Supabase.", starter: {} },
+  { id: "giveaway_entries", label: "Giveaway entries", summary: "Private giveaway entries submitted through the website.", starter: {} },
 ];
 
 function displayName(row: Row) {
@@ -22,9 +24,10 @@ function displayName(row: Row) {
 }
 
 export function AdminConsole() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const supabase = useMemo(() => url && anonKey ? createBrowserClient(url, anonKey) : null, [url, anonKey]);
+  const config = getSupabasePublicConfig();
+  const supabaseUrl = config?.url;
+  const supabaseKey = config?.key;
+  const supabase = useMemo(() => supabaseUrl && supabaseKey ? createBrowserClient(supabaseUrl, supabaseKey) : null, [supabaseUrl, supabaseKey]);
   const [view, setView] = useState<TableKey>("courses");
   const [sessionEmail, setSessionEmail] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
@@ -103,7 +106,7 @@ export function AdminConsole() {
   }
 
   async function saveRecord() {
-    if (!supabase || view === "contact_submissions") return;
+    if (!supabase || view === "contact_submissions" || view === "giveaway_entries") return;
     setBusy(true); setStatus("");
     let payload: Row;
     try {
@@ -130,7 +133,7 @@ export function AdminConsole() {
   }
 
   async function deleteRecord(row: Row) {
-    if (!supabase || view === "contact_submissions") return;
+    if (!supabase || view === "contact_submissions" || view === "giveaway_entries") return;
     const identity = view === "site_settings" ? "key" : "id";
     if (!window.confirm(`Delete “${displayName(row)}”? This cannot be undone.`)) return;
     setBusy(true);
@@ -203,7 +206,7 @@ export function AdminConsole() {
           <div className="admin-sidebar-brand"><span>KX</span><div><strong>KNIGHTFX</strong><small>CONTENT WORKSPACE</small></div></div>
           <span className="admin-nav-label">PUBLISHING</span>
           {collections.map((collection) => {
-            const Icon = collection.id === "contact_submissions" ? Inbox : FileJson2;
+            const Icon = collection.id === "contact_submissions" || collection.id === "giveaway_entries" ? Inbox : FileJson2;
             return <button key={collection.id} className={view === collection.id ? "admin-nav-item active" : "admin-nav-item"} onClick={() => { setView(collection.id); setSelected(null); setDraft(""); setStatus(""); }}><Icon size={15} />{collection.label}<ChevronRight size={13} /></button>;
           })}
           <div className="admin-sidebar-bottom"><span>SIGNED IN</span><strong>{sessionEmail}</strong><button onClick={signOut}><LogOut size={14} /> Sign out</button></div>
@@ -213,7 +216,7 @@ export function AdminConsole() {
           <p className="admin-summary">{activeCollection.summary}</p>
           {status && <div className="admin-alert" role="status">{status}<button onClick={() => setStatus("")} aria-label="Dismiss message"><X size={15} /></button></div>}
 
-          {view !== "contact_submissions" && <div className="admin-workbench">
+          {view !== "contact_submissions" && view !== "giveaway_entries" && <div className="admin-workbench">
             <div className="admin-record-list"><div className="admin-list-heading"><span>RECORDS / {rows.length}</span><button className="button button-outline" onClick={beginNew}>New record <ChevronRight size={14} /></button></div>
               {rows.length === 0 ? <div className="admin-empty">No records yet.<br /><small>Create a draft record to get started.</small></div> : rows.map((row) => <button key={String(row.id ?? row.key)} className={selected === row ? "admin-record active" : "admin-record"} onClick={() => beginEdit(row)}><span>{displayName(row)}</span><small>{String(row.status ?? (row.published ? "published" : row.public ? "public setting" : "draft"))}</small></button>)}
             </div>
@@ -223,6 +226,8 @@ export function AdminConsole() {
           </div>}
 
           {view === "contact_submissions" && <div className="admin-inbox">{rows.length === 0 ? <div className="admin-empty">No enquiries have been received.</div> : rows.map((row) => <article className="admin-contact-item" key={String(row.id)}><div className="admin-contact-head"><span>{String(row.name)} <small>{String(row.email)}</small></span><time>{String(row.created_at ?? "")}</time></div><h2>{String(row.subject)}</h2><p>{String(row.message)}</p>{row.read_at ? <span className="read-status"><Check size={13} /> Read</span> : <button className="text-link" onClick={() => void markRead(row)}>Mark as read <Check size={13} /></button>}</article>)}</div>}
+
+          {view === "giveaway_entries" && <div className="admin-inbox">{rows.length === 0 ? <div className="admin-empty">No giveaway entries have been received.</div> : rows.map((row) => <article className="admin-contact-item giveaway-admin-item" key={String(row.id)}><div className="admin-contact-head"><span>{String(row.name)}</span><time>{String(row.created_at ?? "")}</time></div><p><strong>Email</strong> {String(row.email)} <span aria-hidden="true">·</span> <strong>Phone</strong> {String(row.country_code)} {String(row.phone).replace(String(row.country_code ?? ""), "")} <span aria-hidden="true">·</span> <strong>Instagram</strong> @{String(row.instagram_handle)}</p><small>Consent recorded: {row.consent_given ? "Yes" : "No"}</small></article>)}</div>}
 
           <div className="admin-media"><div><CloudUpload size={16} /><strong>Site media library</strong><span>Upload a verified image to public site media storage.</span></div><label className="button button-outline">Upload image<input type="file" accept="image/*" disabled={busy} onChange={(event) => void uploadAsset(event.target.files?.[0])} /></label>{assetUrl && <div className="admin-asset-url"><input value={assetUrl} readOnly aria-label="Uploaded image public URL" /><button className="icon-button" onClick={() => void copyAssetUrl()}>Copy</button></div>}</div>
           <p className="admin-rules-note"><Shield size={14} /> Publishing evidence requires both <code>verified: true</code> and <code>published: true</code>. Supabase policies enforce administrator access independently of this screen.</p>
