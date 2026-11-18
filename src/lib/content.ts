@@ -3,7 +3,7 @@ export const siteConfig = {
   founder: "Hareesh",
   experience: "4+ years",
   links: {
-    discord: "https://discord.gg/a62jBGnfT",
+    discord: "https://discord.gg/dZC7UxuKFy",
     telegram: "https://t.me/knightfxtrader",
     instagram: "",
     youtube: "",

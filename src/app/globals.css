@@ -375,7 +375,6 @@ button { color: inherit; }
 .partner-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-items: stretch; gap: 14px; }
 .partner-panel { --partner-accent: #b7b7b0; position: relative; display: flex; min-width: 0; min-height: 250px; flex-direction: column; overflow: hidden; padding: 15px 16px 0; border: 1px solid rgba(255,255,255,.13); border-radius: 16px; background: linear-gradient(145deg,rgba(33,33,32,.72),rgba(10,10,10,.95) 72%); box-shadow: inset 0 1px 0 rgba(255,255,255,.06),0 12px 28px rgba(0,0,0,.2); color: #f1f1ed; text-align: left; animation: partner-card-enter .38s cubic-bezier(.2,.7,.2,1) both; transition: transform .25s cubic-bezier(.2,.7,.2,1),border-color .25s ease,background .25s ease,box-shadow .25s ease; }
 .partner-panel[data-partner="foraxis"] { --partner-accent: #20a4c5; }
-.partner-panel[data-partner="funderblu"] { --partner-accent: #aabcf6; }
 .partner-panel[data-partner="vestmarkets"] { --partner-accent: #4c8065; }
 .partner-panel[data-partner="fundedsquad"] { --partner-accent: #c5fa48; }
 .partner-panel[data-partner="legionfunding"] { --partner-accent: #258ff1; }
@@ -392,7 +391,6 @@ button { color: inherit; }
 .partner-card-index { color: #e2e2dc; }
 .partner-logo-stage { position: relative; z-index: 1; display: grid; width: 100%; height: 136px; flex: 1 0 136px; place-items: center; overflow: hidden; margin-top: 6px; border: 1px solid color-mix(in srgb,var(--partner-accent) 15%,rgba(255,255,255,.08)); border-radius: 11px; background: radial-gradient(ellipse at 50% 65%,rgba(255,255,255,.06),transparent 68%),rgba(0,0,0,.2); }
 .partner-panel[data-partner="foraxis"] .partner-logo-stage, .partner-panel[data-partner="vestmarkets"] .partner-logo-stage, .partner-panel[data-partner="fundedsquad"] .partner-logo-stage { background: #fafbf9; }
-.partner-panel[data-partner="funderblu"] .partner-logo-stage { background: #070e31; }
 .partner-panel[data-partner="legionfunding"] .partner-logo-stage { background: #071d3b; }
 .partner-panel[data-partner="blueguardian"] .partner-logo-stage { background: #0a2a43; }
 .partner-panel[data-partner="fundedtradermarkets"] .partner-logo-stage { background: #020609; }
@@ -402,12 +400,12 @@ button { color: inherit; }
 .partner-panel[data-partner="xmglobal"] .partner-logo-image { transform: scale(1.8); }
 .partner-panel[data-partner="valetax"] .partner-logo-image { transform: scale(2.25); }
 .partner-panel[data-partner="blueguardian"] .partner-logo-image { transform: scale(1.55); }
-.partner-panel[data-partner="fundedtradermarkets"] .partner-logo-image { transform: scale(2.5); }
+.partner-panel[data-partner="fundedtradermarkets"] .partner-logo-image { transform: scale(1.1); }
 .partner-panel:hover .partner-logo-image { transform: scale(1.035); filter: brightness(1.08); }
 .partner-panel[data-partner="xmglobal"]:hover .partner-logo-image { transform: scale(1.8); }
 .partner-panel[data-partner="valetax"]:hover .partner-logo-image { transform: scale(2.25); }
 .partner-panel[data-partner="blueguardian"]:hover .partner-logo-image { transform: scale(1.55); }
-.partner-panel[data-partner="fundedtradermarkets"]:hover .partner-logo-image { transform: scale(2.5); }
+.partner-panel[data-partner="fundedtradermarkets"]:hover .partner-logo-image { transform: scale(1.1); }
 .partner-wordmark-fallback { color: #f0f0ec; font-family: var(--font-display); font-size: clamp(22px,3vw,38px); font-weight: 500; letter-spacing: -.07em; }
 .partner-wordmark-fallback span { color: #aaa9a3; font-weight: 400; }
 .partner-card-footer { position: relative; z-index: 1; display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0 14px; border-top: 1px solid rgba(255,255,255,.085); }
